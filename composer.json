@@ -5,6 +5,11 @@
     "require": {
         "php": ">=5.6.4"
     },
+    "autoload": {
+        "psr-4": {
+            "Damnyan\\Cmn\\": "src/"
+        }
+    },
     "license": "MIT",
     "authors": [
         {
