@@ -29,8 +29,10 @@ abstract class AbstractModel extends Model
     public static function createOrThrow(array $attributes = [])
     {
         $resource = parent::create($attributes);
-        if(! $resource)
+
+        if (!$resource) {
             throw new BadRequestException('Failed to create '.parent::getResourceName().'. Please try again later.');
+        }
 
         return $resource;
     }
@@ -38,16 +40,22 @@ abstract class AbstractModel extends Model
     public function updateOrThrow(array $values)
     {
         $resource = parent::update($values);
-        if(! $resource)
+
+        if (!$resource) {
             throw new BadRequestException('Failed to update '.$this->resourceName.'. Please try again later.');
+        }
+
         return $resource;
     }
 
     public function deleteOrThrow()
     {
         $resource = parent::delete();
-        if(! $resource)
+
+        if (!$resource) {
             throw new BadRequestException('Failed to delete '.$this->resourceName.'. Please try again later.');
+        }
+
         return $resource;
     }
 
@@ -59,16 +67,18 @@ abstract class AbstractModel extends Model
 
     public function scopeFindOrThrow($query, $id, $columns = ['*'])
     {
-        if(!$resource = $query->find($id, $columns))
+        if (!$resource = $query->find($id, $columns)) {
             throw new ResourceNotFoundException($this->resourceName);
+        }
 
         return $resource;
     }
 
     public function scopeFirstOrThrow($query, $columns = ['*'])
     {
-        if(!$resource = $query->first($columns))
+        if (!$resource = $query->first($columns)) {
             throw new ResourceNotFoundException($this->resourceName);
+        }
 
         return $resource;
     }
@@ -78,13 +88,16 @@ abstract class AbstractModel extends Model
         return $query->whereIn('id', $ids);
     }
 
-    public function scopeAllOrThrow($query, $columns = ['*'], $isPaginated = false)
+    public function scopeAllOrThrow($query, $columns = ['*'])
     {
         $resources = $query->get($columns);
-        if($resources->count()<1)
+        
+        if ($resources->count()<1) {
             throw new NoResourceFoundException($this->resourceName);
+        }
 
-        if($isPaginated){
+        $isPaginated = Request::get('is_paginated');
+        if ($isPaginated) {
             return $resources->paginate(25);
         }
 

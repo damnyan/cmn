@@ -43,13 +43,9 @@ class Handler extends ExceptionHandler
         {
             return ApiResponse::forbidden(trans('cmn::messages.forbidden'));
         }
-        elseif($exception instanceof InvalidRequestException)
+        elseif($exception instanceof UnprocessedEntityException)
         {
-            return ApiResponse::invalidRequest($exception->msg);
-        }
-        elseif($exception instanceof RequestErrorException)
-        {
-            return ApiResponse::requestError($exception->errors);
+            return ApiResponse::unproccessedEntity($exception->errors);
         }
         elseif($exception instanceof BadRequestException)
         {

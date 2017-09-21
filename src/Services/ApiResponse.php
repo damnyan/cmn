@@ -3,13 +3,15 @@
 namespace Damnyan\Cmn\Services;
 
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\Request;
 
 class ApiResponse
 {
-    protected $response;
+    protected $responseData;
     protected $status;
     protected $message;
     protected $errors;
+    protected $headers = [];
 
     public function __construct()
     {
@@ -18,120 +20,139 @@ class ApiResponse
 
     private function response()
     {
-        return response()->json($this->response, $this->status);
+        return response()
+            ->json($this->responseData, $this->status)
+            ->withHeaders($this->headers);
     }
 
-    public function append($key, $data)
+    public static function resource($resource)
     {
-        $this->response[$key] = $data;
-        return $this;
+        $apiResponse = new static;
+        $apiResponse->setResponse($resource);
+        return $apiResponse->responseData;
+    }
+
+    public static function created($msg = null, $id = null)
+    {
+        $url = Request::path().'/'.$id;
+        $apiResponse = new static;
+        $apiResponse->statusCreated();
+
+        if ($id) {
+            $apiResponse->addHeader('Location', $url);   
+        }
+
+        if ($msg != null) {
+            $apiResponse->setMessage($msg);
+        }
+
+        return $apiResponse->response();
     }
 
     public static function resourceNotFound($msg = null)
     {
-        $response = new static;
-        $response->statusNotFound();
-        if($msg != null)
-            $response->setMessage($msg);
+        $apiResponse = new static;
+        $apiResponse->statusNotFound();
 
-        return $response->response();
+        if ($msg != null) {
+            $apiResponse->setMessage($msg);
+        }
+
+        return $apiResponse->response();
     }
 
     public static function badRequest($msg = null)
     {
-        $response = new static;
-        $response->statusBadRequest();
-        if($msg != null)
-            $response->setMessage($msg);
+        $apiResponse = new static;
+        $apiResponse->statusBadRequest();
 
-        return $response->response();
+        if ($msg != null) {
+            $apiResponse->setMessage($msg);
+        }
+
+        return $apiResponse->response();
     }
 
     public static function responseOK($msg = null)
     {
-        $response = new static;
-        if($msg != null)
-            $response->setMessage($msg);
+        $apiResponse = new static;
+        
+        if ($msg != null) {
+            $apiResponse->setMessage($msg);
+        }
 
-        return $response->response();
+        return $apiResponse->response();
     }
 
     public static function responseData($data, $msg = null)
     {
-        $response = new static;
-        $response->setData($data);
-        if($msg != null)
-            $response->setMessage($msg);
+        $apiResponse = new static;
+        $apiResponse->setResponse($data);
+        
+        if ($msg != null) {
+            $apiResponse->setMessage($msg);
+        }
 
-        return $response->response();
-    }
-
-    public static function paginateResponse($data, $msg = null)
-    {
-        $response = new static;
-        $data = $data->toArray();
-        foreach($data as $i=>$v)
-            $response->append($i, $v);
-
-        if($msg != null)
-            $response->setMessage($msg);
-
-        return $response->response();
+        return $apiResponse->response();
     }
 
     public static function forbidden($msg = null)
     {
-        $response = new static;
-        $response->statusForbidden();
-        if($msg != null)
-            $response->setMessage($msg);
+        $apiResponse = new static;
+        $apiResponse->statusForbidden();
+        
+        if ($msg != null) {
+            $apiResponse->setMessage($msg);
+        }
 
-        return $response->response();
+        return $apiResponse->response();
     }
 
-    public static function invalidRequest($msg = null)
+    public static function unproccessedEntity($errors)
     {
-        $response = new static;
-        $response->statusUnproccessedEntity();
-        if($msg != null)
-            $response->setMessage($msg);
-
-        return $response->response();
+        $apiResponse = new static;
+        $apiResponse->setErrors($errors);
+        $apiResponse->statusUnproccessedEntity();
+        return $apiResponse->response();
     }
 
-    public static function requestError($errors)
+    private function setResponse($data)
     {
-        $response = new static;
-        $response->setErrors($errors);
-        $response->statusUnproccessedEntity();
-        return $response->response();
-    }
-
-    private function setData($data)
-    {
-        $this->response['data'] = $data;
+        $this->responseData = $data;
         return $this;
     }
 
     private function setErrors($errors)
     {
-        $this->response['errors'] = $errors;
+        $this->responseData['errors'] = $errors;
         return $this;
     }
 
     private function setMessage($message=null)
     {
-        if(!$message) return $this;
+        if (!$message) return $this;
         $this->message = $message;
-        $this->response['message'] = $message;
+        $this->responseData['message'] = $message;
         return $this;
     }
 
     private function setStatus($status)
     {
         $this->status = $status;
-        $this->response['status'] = $this->status;
+        $this->responseData['status'] = $this->status;
         $this->setDefaultMessage($status);
+        return $this;
+    }
+
+    private function setHeaders($headers)
+    {
+        $this->headers = $headers;
+        return $this;
+    }
+
+    private function addHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
         return $this;
     }
 
@@ -156,6 +177,12 @@ class ApiResponse
     private function statusUnproccessedEntity()
     {
         $this->setStatus(HttpResponse::HTTP_UNPROCESSABLE_ENTITY);
+        return $this;
+    }
+
+    private function statusCreated()
+    {
+        $this->setStatus(HttpResponse::HTTP_CREATED);
         return $this;
     }
 

@@ -4,7 +4,7 @@ namespace Damnyan\Cmn\Services;
 
 use Illuminate\Filesystem\Filesystem;
 
-class GHRoute {
+class Route {
 
     static $module;
 
@@ -21,8 +21,7 @@ class GHRoute {
 
         $files = \File::allFiles($routePath);
 
-        foreach($files as $file)
-        {
+        foreach ($files as $file) {
             $route = $file->getFilename();
             if(in_array($route, ['api.php', 'web.php']))
                 continue;
@@ -33,7 +32,7 @@ class GHRoute {
             
             \Route::group([
                 'prefix'     => $prefix,
-            ], function ($router) use($filePath) {
+            ], function ($router) use ($filePath) {
                 require $filePath;
             });
         }
@@ -43,8 +42,10 @@ class GHRoute {
     {
         $prefix = str_replace($routePath, '', $filePath);
         $prefix = str_replace("\\", "/", $prefix);
-        if($route == 'index.php')
+        
+        if ($route == 'index.php') {
             return str_replace('index.php', '', $prefix);
+        }
         
         return str_replace('.php', '', $prefix);
     }

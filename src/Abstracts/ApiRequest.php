@@ -2,14 +2,14 @@
 
 namespace Damnyan\Cmn\Abstracts;
 
+use Damnyan\Cmn\Exceptions\UnprocessedEntityException;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 abstract class ApiRequest extends FormRequest
 {
-	public function response(array $errors)
+	public function failedValidation(Validator $validator)
 	{
-		$response['status'] = 422;
-		$response['errors'] = $errors;
-		return \Response::json($response ,422);
+		throw new UnprocessedEntityException($validator->errors());
 	}
 }

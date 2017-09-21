@@ -16,5 +16,12 @@
             "name": "damnyan",
             "email": "damnyan@gmail.com"
         }
-    ]
+    ],  
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Damnyan\\Cmn\\CmnServiceProvider"
+            ]
+        }
+    }
 }
