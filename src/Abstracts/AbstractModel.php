@@ -2,11 +2,12 @@
 
 namespace Damnyan\Cmn\Abstracts;
 
+use Carbon\Carbon;
 use Damnyan\Cmn\Exceptions\BadRequestException;
 use Damnyan\Cmn\Exceptions\NoResourceFoundException;
 use Damnyan\Cmn\Exceptions\ResourceNotFoundException;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Request;
 
 abstract class AbstractModel extends Model
 {
@@ -90,18 +91,15 @@ abstract class AbstractModel extends Model
 
     public function scopeAllOrThrow($query, $columns = ['*'])
     {
-        $resources = $query->get($columns);
-        
-        if ($resources->count()<1) {
-            throw new NoResourceFoundException($this->resourceName);
+        $resources = $query;
+
+        $isPaginated = Request::get('paginate');
+        $perPage = Request::get('per_page')?:25;
+        if ($isPaginated == 1) {
+            return $resources->paginate($perPage);
         }
 
-        $isPaginated = Request::get('is_paginated');
-        if ($isPaginated) {
-            return $resources->paginate(25);
-        }
-
-        return $resources;
+        return $resources->get();
     }
 
     public function scopeFindByIdsOrThrow($query, $ids, $columns = ['*'])
