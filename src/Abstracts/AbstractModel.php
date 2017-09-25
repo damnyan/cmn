@@ -94,9 +94,10 @@ abstract class AbstractModel extends Model
         $resources = $query;
 
         $isPaginated = Request::get('paginate');
-        $perPage = Request::get('per_page')?:25;
+        $perPage = (int) (Request::get('per_page')?:25);
         if ($isPaginated == 1) {
-            return $resources->paginate($perPage);
+            return $resources->paginate($perPage)
+                ->appends(request()->except('page'));
         }
 
         return $resources->get();
@@ -105,21 +106,24 @@ abstract class AbstractModel extends Model
     public function scopeFindByIdsOrThrow($query, $ids, $columns = ['*'])
     {
         $resources = $query->findByIds($ids);
-        if($resources->count()<1)
+        if ($resources->count()<1) {
             throw new NoResourceFoundException($this->resourceName);
+        }
 
         return $resources->get();
     }
 
     public function scopeFindByOrThrow($query, $field, $value, $operator = '=')
     {
-        if(is_array($value))
+        if (is_array($value)) {
             $resources = $query->whereIn($field, $value);
-        else
+        } else {
             $resources = $query->where($field, $operator, $value);
+        }
 
-        if($resources->count()<1)
+        if ($resources->count()<1) {
             throw new NoResourceFoundException($this->resourceName);
+        }
 
         return $resources;
     }
