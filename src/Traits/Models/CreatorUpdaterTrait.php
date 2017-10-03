@@ -8,47 +8,39 @@ trait CreatorUpdaterTrait
 {
     public static function bootCreatorUpdaterTrait()
     {
-        static::creating(function($model){
-            if(Auth::check())
-            {
+        static::creating(function ($model) {
+            if (Auth::check()) {
                 $model->created_by = Auth::user()->id;
-                if(!$model->creatorOnly)
-                {
-                    $model->updated_by = Auth::user()->id;
-                }
-            }
-        });
-        static::updating(function($model){
-            if(Auth::check())
-            {
-                if(!$model->creatorOnly)
-                {
+                if (!$model->creatorOnly) {
                     $model->updated_by = Auth::user()->id;
                 }
             }
         });
 
-        static::deleting(function($model){
-            if(Auth::check())
-            {
-                if(!$model->creatorOnly)
-                {
+        static::updating(function ($model) {
+            if (Auth::check()) {
+                if (!$model->creatorOnly) {
+                    $model->updated_by = Auth::user()->id;
+                }
+            }
+        });
+
+        static::deleting(function ($model) {
+            if (Auth::check()) {
+                if (!$model->creatorOnly) {
                     $model->updated_by = Auth::user()->id;
                 }
             }
         });
         
-        if(function_exists('restoring'))
-        {
-            static::restoring(function($model){
-                if(Auth::check())
-                {
-                    if(!$model->creatorOnly)
-                    {
+        if (function_exists('restoring')) {
+            static::restoring(function ($model) {
+                if (Auth::check()) {
+                    if (!$model->creatorOnly) {
                         $model->updated_by = Auth::user()->id;
                     }
                 }
-            });   
+            });
         }
     }
 

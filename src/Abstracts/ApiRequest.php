@@ -8,8 +8,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 abstract class ApiRequest extends FormRequest
 {
-	public function failedValidation(Validator $validator)
-	{
-		throw new UnprocessedEntityException($validator->errors());
-	}
+    public function failedValidation(Validator $validator)
+    {
+        throw new UnprocessedEntityException($validator->errors());
+    }
 }

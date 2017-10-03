@@ -39,7 +39,7 @@ class ApiResponse
         $apiResponse->statusCreated();
 
         if ($id) {
-            $apiResponse->addHeader('Location', $url);   
+            $apiResponse->addHeader('Location', $url);
         }
 
         if ($msg != null) {
@@ -116,6 +116,22 @@ class ApiResponse
         return $apiResponse->response();
     }
 
+    public static function internalServerError($code, $msg = null)
+    {
+        $apiResponse = new static;
+        $apiResponse->statusInternalServerError();
+        
+        $apiResponse->setResponse(['code' => $code]);
+
+        if ($msg != null) {
+            $apiResponse->setMessage($msg);
+        } else {
+            $apiResponse->setDefaultMessage($apiResponse->status);
+        }
+
+        return $apiResponse->response();
+    }
+
     private function setResponse($data)
     {
         $this->responseData = $data;
@@ -128,9 +144,11 @@ class ApiResponse
         return $this;
     }
 
-    private function setMessage($message=null)
+    private function setMessage($message = null)
     {
-        if (!$message) return $this;
+        if (!$message) {
+            return $this;
+        }
         $this->message = $message;
         $this->responseData['message'] = $message;
         return $this;
@@ -139,7 +157,6 @@ class ApiResponse
     private function setStatus($status)
     {
         $this->status = $status;
-        $this->responseData['status'] = $this->status;
         $this->setDefaultMessage($status);
         return $this;
     }
@@ -183,6 +200,12 @@ class ApiResponse
     private function statusCreated()
     {
         $this->setStatus(HttpResponse::HTTP_CREATED);
+        return $this;
+    }
+
+    private function statusInternalServerError()
+    {
+        $this->setStatus(HttpResponse::HTTP_INTERNAL_SERVER_ERROR);
         return $this;
     }
 

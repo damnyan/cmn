@@ -2,8 +2,9 @@
 
 namespace Damnyan\Cmn\Exceptions;
 
-use Damnyan\Cmn\Services\ApiResponse;
 use Exception;
+use Damnyan\Cmn\Services\ApiResponse;
+use Illuminate\Database\QueryException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
@@ -31,25 +32,30 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if($exception instanceof ResourceNotFoundException)
-        {
-            return ApiResponse::resourceNotFound(trans_choice('cmn::messages.resource.empty', 1,['resource' => $exception->resource]));
-        }
-        elseif($exception instanceof NoResourceFoundException)
-        {
-            return ApiResponse::resourceNotFound(trans_choice('cmn::messages.resource.empty', 2,['resource' => $exception->resource]));
-        }
-        elseif($exception instanceof ForbiddenException)
-        {
+        if ($exception instanceof ResourceNotFoundException) {
+            return ApiResponse::resourceNotFound(
+                trans_choice(
+                    'cmn::messages.resource.empty',
+                    1,
+                    ['resource' => $exception->resource]
+                )
+            );
+        } elseif ($exception instanceof NoResourceFoundException) {
+            return ApiResponse::resourceNotFound(
+                trans_choice(
+                    'cmn::messages.resource.empty',
+                    2,
+                    ['resource' => $exception->resource]
+                )
+            );
+        } elseif ($exception instanceof ForbiddenException) {
             return ApiResponse::forbidden(trans('cmn::messages.forbidden'));
-        }
-        elseif($exception instanceof UnprocessedEntityException)
-        {
+        } elseif ($exception instanceof UnprocessedEntityException) {
             return ApiResponse::unproccessedEntity($exception->errors);
-        }
-        elseif($exception instanceof BadRequestException)
-        {
-            return ApiResponse::badRequest($exception->msg);   
+        } elseif ($exception instanceof BadRequestException) {
+            return ApiResponse::badRequest($exception->msg);
+        } elseif ($exception instanceof QueryException && env('APP_ENV') == 'production') {
+            return ApiResponse::internalServerError(1013);
         }
 
         return parent::render($request, $exception);
