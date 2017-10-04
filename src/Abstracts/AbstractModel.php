@@ -103,6 +103,22 @@ abstract class AbstractModel extends Model
         return $resources->get();
     }
 
+    public function scopeGetOrPaginate($query, $columns = ['*'])
+    {
+        $resources = $query;
+
+        $isPaginated = Request::get('paginate');
+        $perPage = (int) (Request::get('per_page')
+            ?
+            : env('DMN_DMN_DEFAULT_PAGINATION'));
+        if ($isPaginated != 0) {
+            return $resources->paginate($perPage)
+                ->appends(request()->except('page'));
+        }
+
+        return $resources->get();
+    }
+
     public function scopeFindByIdsOrThrow($query, $ids, $columns = ['*'])
     {
         $resources = $query->findByIds($ids);

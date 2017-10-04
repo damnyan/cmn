@@ -6,6 +6,7 @@ use Exception;
 use Damnyan\Cmn\Services\ApiResponse;
 use Illuminate\Database\QueryException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -56,6 +57,9 @@ class Handler extends ExceptionHandler
             return ApiResponse::badRequest($exception->msg);
         } elseif ($exception instanceof QueryException && env('APP_ENV') == 'production') {
             return ApiResponse::internalServerError(1013);
+        } elseif ($exception instanceof ModelNotFoundException) {
+            $model = $exception->getModel();
+            return ApiResponse::resourceNotFound((new $model)->getResourceName().' not found.');
         }
 
         return parent::render($request, $exception);
