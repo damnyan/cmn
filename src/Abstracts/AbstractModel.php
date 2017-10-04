@@ -107,11 +107,12 @@ abstract class AbstractModel extends Model
     {
         $resources = $query;
 
-        $isPaginated = Request::get('paginate');
+        $isPaginated = (string) Request::get('paginate');
         $perPage = (int) (Request::get('per_page')
             ?
             : env('DMN_DMN_DEFAULT_PAGINATION'));
-        if ($isPaginated != 0) {
+
+        if ($isPaginated != '0') {
             return $resources->paginate($perPage)
                 ->appends(request()->except('page'));
         }
