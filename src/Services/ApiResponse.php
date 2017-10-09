@@ -32,9 +32,10 @@ class ApiResponse
         return $apiResponse->responseData;
     }
 
-    public static function created($msg = null, $id = null)
+    public static function created($msg = null, $id = null, $baseUrl = null)
     {
-        $url = Request::path().'/'.$id;
+        $baseUrl = $baseUrl?$baseUrl:Request::path().'/';
+        $url = $baseUrl.$id;
         $apiResponse = new static;
         $apiResponse->statusCreated();
 
