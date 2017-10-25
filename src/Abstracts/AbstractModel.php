@@ -113,11 +113,11 @@ abstract class AbstractModel extends Model
             : env('DMN_DMN_DEFAULT_PAGINATION'));
 
         if ($isPaginated != '0') {
-            return $resources->paginate($perPage)
+            return parent::paginate($perPage)
                 ->appends(request()->except('page'));
         }
 
-        return $resources->get();
+        return parent::get();
     }
 
     public function scopeFindByIdsOrThrow($query, $ids, $columns = ['*'])
