@@ -50,6 +50,25 @@ class ApiResponse
         return $apiResponse->response();
     }
 
+    public static function resourceCreated($resource)
+    {
+        return self::resource($resource->additional([
+            'message' => $resource->getResourceName().' successfully created.'
+        ]));
+    }
+
+    public static function resourceUpdated($resource)
+    {
+        return self::resource($resource->additional([
+            'message' => $resource->getResourceName().' successfully updated.'
+        ]));
+    }
+
+    public static function resourceDeleted($resource)
+    {
+        return self::responseOK($resource->getResourceName().' successfully deleted.');
+    }
+
     public static function resourceNotFound($msg = null)
     {
         $apiResponse = new static;
