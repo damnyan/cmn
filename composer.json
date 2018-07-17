@@ -3,8 +3,7 @@
     "description": "Common",
     "type": "library",
     "require": {
-        "php": ">=5.6.4",
-        "damnyan/cmn": "3.0.2"
+        "php": ">=5.6.4"
     },
     "autoload": {
         "psr-4": {
