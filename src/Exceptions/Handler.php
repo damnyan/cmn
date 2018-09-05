@@ -11,6 +11,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
+
     /**
      * Report or log an exception.
      *
@@ -55,7 +56,7 @@ class Handler extends ExceptionHandler
             return ApiResponse::unproccessedEntity($exception->errors);
         } elseif ($exception instanceof BadRequestException) {
             return ApiResponse::badRequest($exception->msg);
-        } elseif ($exception instanceof QueryException && env('APP_ENV') == 'production') {
+        } elseif ($exception instanceof QueryException && config('app.env') == 'production') {
             return ApiResponse::internalServerError(1013);
         } elseif ($exception instanceof ModelNotFoundException) {
             $model = $exception->getModel();

@@ -2,9 +2,9 @@
 
 namespace Damnyan\Cmn\Abstracts;
 
-use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-abstract class AbstractResource extends Resource
+abstract class AbstractResource extends JsonResource
 {
     public function __construct($resource)
     {
