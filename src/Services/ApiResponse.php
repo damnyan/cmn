@@ -7,10 +7,15 @@ use Illuminate\Support\Facades\Request;
 
 class ApiResponse
 {
+
     protected $responseData;
+
     protected $status;
+
     protected $message;
+
     protected $errors;
+
     protected $headers = [];
 
     public function __construct()
@@ -34,7 +39,10 @@ class ApiResponse
 
     public static function created($msg = null, $id = null, $baseUrl = null)
     {
-        $baseUrl = $baseUrl?$baseUrl:Request::path().'/';
+        $baseUrl = $baseUrl
+            ? $baseUrl
+            : Request::path().'/';
+
         $url = $baseUrl.$id;
         $apiResponse = new static;
         $apiResponse->statusCreated();
