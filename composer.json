@@ -21,7 +21,10 @@
         "laravel": {
             "providers": [
                 "Damnyan\\Cmn\\CmnServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "ApiResponse": "Damnyan\\Cmn\\Facades\\ApiResponse"
+            }
         }
     }
 }

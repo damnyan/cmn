@@ -9,6 +9,11 @@ class UnprocessedEntityException extends Exception
 
     public $errors;
 
+    /**
+     * Constructor
+     *
+     * @param array $errors errors
+     */
     public function __construct($errors)
     {
         $this->errors = $errors;
