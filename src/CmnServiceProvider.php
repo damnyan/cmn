@@ -2,15 +2,20 @@
 
 namespace Damnyan\Cmn;
 
+use Damnyan\Cmn\Services\ApiResponse;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Database\Query\Builder as QBuilder;
-use Illuminate\Database\Eloquent\Builder as EBuilder;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Damnyan\Cmn\Providers\MacroServiceProvider;
+use Damnyan\Cmn\Providers\HelperServiceProvider;
+use Damnyan\Cmn\Providers\ValidatorServiceProvider;
 
 class CmnServiceProvider extends ServiceProvider
 {
+    /**
+     * Bootstrap the module services.
+     *
+     * @return void
+     */
     public function boot()
     {
         $this->publishes(
@@ -19,66 +24,34 @@ class CmnServiceProvider extends ServiceProvider
         );
 
         $this->loadTranslationsFrom(__DIR__.'/Resources/Lang', 'cmn');
-        $this->bootValidators();
-        $this->bootMacros();
     }
 
-    private function bootValidators()
-    {
-        Validator::extend(
-            'uc_image',
-            '\Damnyan\Cmn\Validators\ImageValidator@ucImage'
-        );
-    }
-
-    private function bootMacros()
-    {
-        $parent = $this;
-
-        QBuilder::macro(
-            'getOrPaginate',
-            function () use($parent) {
-                return $parent::getOrPaginate($this);
-            }
-        );
-
-        EBuilder::macro(
-            'getOrPaginate',
-            function () use($parent) {
-                return $parent::getOrPaginate($this);
-            }
-        );
-
-        BelongsToMany::macro(
-            'getOrPaginate',
-            function () use($parent) {
-                return $parent::getOrPaginate($this);
-            }
-        );
-
-        HasManyThrough::macro(
-            'getOrPaginate',
-            function () use($parent) {
-                return $parent::getOrPaginate($this);
-            }
-        );
-    }
-
-    public static function getOrPaginate($macroable)
-    {
-        $isPaginated = (string) request()->get('paginate', 1);
-        $perPage     = (int) (request()->get('per_page', config('cmn.default_per_page')));
-
-        if ($isPaginated != '0') {
-            return $macroable->paginate($perPage)
-                ->appends(request()->except('page'));
-        }
-
-        return $macroable->get();
-    }
-
+    /**
+     * Register the module services.
+     *
+     * @return void
+     */
     public function register()
     {
-        //
+        $this->app->register(HelperServiceProvider::class);
+        $this->app->register(MacroServiceProvider::class);
+        $this->app->register(ValidatorServiceProvider::class);
+
+        $this->app->singleton(
+            'api_response',
+            function ($app) {
+                return new ApiResponse;
+            }
+        );
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return ['api_response'];
     }
 }

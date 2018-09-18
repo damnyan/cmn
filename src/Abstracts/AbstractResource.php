@@ -6,17 +6,22 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 abstract class AbstractResource extends JsonResource
 {
+    /**
+     * Constructor
+     *
+     * @param mixed $resource resource
+     */
     public function __construct($resource)
     {
         parent::__construct($resource);
         $this->getRelationshipLoads();
     }
 
-    public function toArray($request)
-    {
-        return parent::toArray($request);
-    }
-
+    /**
+     * Load relationships based on request
+     *
+     * @return void
+     */
     public function getRelationshipLoads()
     {
         $relationships = request()->get('relationship');

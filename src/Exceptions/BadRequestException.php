@@ -7,10 +7,15 @@ use Exception;
 class BadRequestException extends Exception
 {
 
-    public $msg;
+    public $message;
 
-    public function __construct($msg)
+    /**
+     * Constructor
+     *
+     * @param string $message message
+     */
+    public function __construct($message)
     {
-        $this->msg = $msg;
+        $this->message = $message;
     }
 }
