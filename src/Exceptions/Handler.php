@@ -3,7 +3,7 @@
 namespace Damnyan\Cmn\Exceptions;
 
 use Exception;
-use Damnyan\Cmn\Services\ApiResponse;
+use Damnyan\Cmn\Facades\ApiResponse;
 use Illuminate\Database\QueryException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
