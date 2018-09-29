@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
         } elseif ($exception instanceof UnprocessedEntityException) {
             return ApiResponse::unproccessedEntity($exception->errors);
         } elseif ($exception instanceof BadRequestException) {
-            return ApiResponse::badRequest($exception->msg);
+            return ApiResponse::badRequest($exception->message);
         } elseif ($exception instanceof QueryException && config('app.env') == 'production') {
             return ApiResponse::internalServerError(1013);
         } elseif ($exception instanceof ModelNotFoundException) {
